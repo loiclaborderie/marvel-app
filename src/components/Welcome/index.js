@@ -40,16 +40,6 @@ function Welcome() {
     };
   }, [userSession]);
 
-  // const db = firebase.db;
-  // const test2 = firebase.user(db, userSession.uid);
-  // console.log(test2);
-  // const test3 = firebase.getData(test2);
-  // console.log(test3);
-
-  // const path = firebase.user(db, userSession.uid);
-  // // const test = firebase.getData(path);
-  // console.log(path);
-
   return userSession === null ? (
     <>
       <div className="loader"></div>
