@@ -1,8 +1,7 @@
 import React from "react";
 
 const ProgressBar = ({ percentage }) => {
-  console.log(percentage);
-  const actualPercentage = percentage * 10;
+  const actualPercentage = (percentage + 1) * 10;
   return (
     <>
       {/* <div className="percentage">
@@ -19,4 +18,4 @@ const ProgressBar = ({ percentage }) => {
   );
 };
 
-export default ProgressBar;
+export default React.memo(ProgressBar);

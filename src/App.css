@@ -544,6 +544,7 @@ input:checked + .slider:before {
   text-align: center;
   border-radius: 5px;
   background: var(--red-color);
+  transition: all 0.7s ease-in-out;
 }
 /* END PROGRESS BAR */
 

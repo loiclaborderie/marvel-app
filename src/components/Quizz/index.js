@@ -4,6 +4,7 @@ import ProgressBar from "../ProgressBar";
 import { QuizzMarvel } from "../QuizzMarvel";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import QuizzOver from "../QuizzOver";
 
 class Quizz extends Component {
   state = {
@@ -18,6 +19,7 @@ class Quizz extends Component {
     selectedAnswer: null,
     score: 0,
     shownWelcomeMsg: false,
+    quizzEnd: false,
   };
 
   storedDataRef = React.createRef();
@@ -58,6 +60,12 @@ class Quizz extends Component {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
+  gameOver() {
+    this.setState({
+      quizzEnd: true,
+    });
+  }
+
   componentDidMount() {
     this.loadQuestions(this.state.levelNames[this.state.quizzLevel]);
   }
@@ -95,7 +103,8 @@ class Quizz extends Component {
 
   handleSubmit = () => {
     if (this.state.questionNumber === this.state.maxQuestions - 1) {
-      // le quizz est fini
+      console.log("game finished");
+      this.gameOver();
     } else {
       this.setState((prev) => ({
         questionNumber: prev.questionNumber + 1,
@@ -144,6 +153,8 @@ class Quizz extends Component {
         "Réfléchis mieux la prochaine fois",
         "Allez, on se ressaisit!",
         "Je commence à avoir pitié de toi...",
+        "Mauvaise réponse!",
+        "NOOOOOPE",
       ];
       toast.error(this.pickRandom(fail), {
         position: "top-right",
@@ -174,8 +185,10 @@ class Quizz extends Component {
     });
     const { pseudo } = this.props.userData;
 
-    return (
-      <div>
+    return this.state.quizzEnd ? (
+      <QuizzOver />
+    ) : (
+      <>
         <Levels />
         <ProgressBar percentage={this.state.questionNumber} />
         <h2>{this.state.question}</h2>
@@ -185,10 +198,12 @@ class Quizz extends Component {
           onClick={this.handleSubmit}
           className="btnSubmit"
         >
-          Suivant
+          {this.state.questionNumber < this.state.maxQuestions - 1
+            ? "Suivant"
+            : "Terminer"}
         </button>
         <ToastContainer />
-      </div>
+      </>
     );
   }
 }
