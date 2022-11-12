@@ -261,6 +261,18 @@ footer {
 .formBoxRight {
   flex: 0 1 50%;
 }
+#btnLogin {
+  background: var(--red-color);
+}
+
+#btnLogin:disabled {
+  background: var(--dark-grey-color);
+  color: var(--white-color);
+}
+
+#btnLogin:hover {
+  background: var(--dark-red-color);
+}
 
 .formBoxRight span {
   display: block;
@@ -268,7 +280,7 @@ footer {
   text-align: center;
   border: 1px solid var(--red-color);
   padding: 10px;
-  margin: 15px 0;
+  margin-bottom: 50px;
 }
 
 .formContent {
@@ -294,7 +306,6 @@ footer {
   padding: 10px 0;
   font-size: 17px;
   color: var(--red-color);
-  text-transform: uppercase;
   font-weight: bold;
   margin-bottom: 30px;
   border: none;
@@ -366,7 +377,7 @@ button[disabled]:hover {
 .simpleLink {
   color: var(--white-color);
   text-decoration: none;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .simpleLink:hover {
@@ -417,6 +428,7 @@ button[disabled]:hover {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 30px;
+  z-index: 1;
 }
 
 .switch {
@@ -424,6 +436,18 @@ button[disabled]:hover {
   display: inline-block;
   width: 60px;
   height: 34px;
+  z-index: 1;
+}
+.imgThatSaysLogout {
+  position: relative;
+  top: 9px;
+  left: 35px;
+  height: 17px;
+  background-image: url(images/logout.svg);
+  background-repeat: no-repeat;
+  background-color: transparent;
+  background-size: contain;
+  z-index: 10;
 }
 
 .switch input {
