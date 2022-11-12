@@ -17,28 +17,38 @@ function Welcome() {
         : setTimeout(() => {
             navigate("/");
           }, 1000);
-    });
+    }, []);
 
-    const test = userSession;
-    console.log(test);
-    const db = firebase.db;
-    const test2 = firebase.user(db, userSession.uid);
-    firebase
-      .getData(test2)
-      .then((doc) => {
-        if (doc && doc.exists) {
-          const myData = doc.data();
-          setuserData(myData);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if (userSession !== null) {
+      const db = firebase.db;
+      const test2 = firebase.user(db, userSession.uid);
+      firebase
+        .getData(test2)
+        .then((doc) => {
+          if (doc && doc.exists) {
+            const myData = doc.data();
+            setuserData(myData);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
 
     return () => {
       listener();
     };
-  }, []);
+  }, [userSession]);
+
+  // const db = firebase.db;
+  // const test2 = firebase.user(db, userSession.uid);
+  // console.log(test2);
+  // const test3 = firebase.getData(test2);
+  // console.log(test3);
+
+  // const path = firebase.user(db, userSession.uid);
+  // // const test = firebase.getData(path);
+  // console.log(path);
 
   return userSession === null ? (
     <>

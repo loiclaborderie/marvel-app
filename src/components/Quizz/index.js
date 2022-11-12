@@ -1,7 +1,15 @@
-import React from "react";
+import React, { Component } from "react";
+import Levels from "../Levels";
 
-const Quizz = () => {
-  return <div>Quizz</div>;
-};
+class Quizz extends Component {
+  render() {
+    const { pseudo } = this.props.userData;
+    return (
+      <div>
+        <Levels />
+      </div>
+    );
+  }
+}
 
 export default Quizz;
