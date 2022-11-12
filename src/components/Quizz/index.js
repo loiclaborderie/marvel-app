@@ -54,6 +54,10 @@ class Quizz extends Component {
     }
   };
 
+  pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
   componentDidMount() {
     this.loadQuestions(this.state.levelNames[this.state.quizzLevel]);
   }
@@ -103,6 +107,54 @@ class Quizz extends Component {
       this.setState((prev) => ({
         score: prev.score + 1,
       }));
+      const congrats = [
+        "Congratulations !",
+        "Congratulations !",
+        "Bravo !",
+        "Congratulations !",
+        "Congratulations !",
+        "Bravo !",
+        "Bravo !",
+        "Bravo !",
+        "Herzlichen Glückwunsch!",
+        "Felisitasyon!",
+        "Gratulálunk!",
+        "Selamat!",
+        "Congratulazioni!",
+        "Felicitări!",
+        "mabrouk!",
+        "felicidades!",
+        "felicidades!",
+      ];
+      toast.success(this.pickRandom(congrats), {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    } else {
+      const fail = [
+        "Dommage, essaye encore...",
+        "Too bad, try again...",
+        "Encore raté !",
+        "Réfléchis mieux la prochaine fois",
+        "Allez, on se ressaisit!",
+        "Je commence à avoir pitié de toi...",
+      ];
+      toast.error(this.pickRandom(fail), {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
   };
 
@@ -121,6 +173,7 @@ class Quizz extends Component {
       );
     });
     const { pseudo } = this.props.userData;
+
     return (
       <div>
         <Levels />
