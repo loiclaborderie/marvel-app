@@ -5,6 +5,7 @@ import { QuizzMarvel } from "../QuizzMarvel";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import QuizzOver from "../QuizzOver";
+import { FaChevronCircleRight } from "react-icons/fa";
 
 class Quizz extends Component {
   constructor(props) {
@@ -216,7 +217,7 @@ class Quizz extends Component {
             this.state.selectedAnswer === option ? "selected" : null
           }`}
         >
-          {option}
+          <FaChevronCircleRight size={"1.2em"} /> {option}
         </p>
       );
     });
