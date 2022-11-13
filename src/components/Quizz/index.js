@@ -7,23 +7,28 @@ import "react-toastify/dist/ReactToastify.css";
 import QuizzOver from "../QuizzOver";
 
 class Quizz extends Component {
-  state = {
-    levelNames: ["debutant", "confirme", "expert"],
-    quizzLevel: 0,
-    maxQuestions: 10,
-    storedQuestions: [],
-    questionNumber: 0,
-    question: null,
-    options: [],
-    btnDisabled: true,
-    selectedAnswer: null,
-    score: 0,
-    shownWelcomeMsg: false,
-    quizzEnd: false,
-    percent: null,
-  };
+  constructor(props) {
+    super(props);
 
-  storedDataRef = React.createRef();
+    this.initialState = {
+      levelNames: ["debutant", "confirme", "expert"],
+      quizzLevel: 0,
+      maxQuestions: 10,
+      storedQuestions: [],
+      questionNumber: 0,
+      question: null,
+      options: [],
+      btnDisabled: true,
+      selectedAnswer: null,
+      score: 0,
+      shownWelcomeMsg: false,
+      quizzEnd: false,
+      percent: null,
+    };
+
+    this.state = this.initialState;
+    this.storedDataRef = React.createRef();
+  }
 
   loadQuestions = (level) => {
     const questions = QuizzMarvel[0][level];
@@ -65,18 +70,15 @@ class Quizz extends Component {
     return (score / maxQuestions) * 100;
   }
 
-  gameOver() {
-    const grade = this.getPercent(this.state.maxQuestions, this.state.score);
-    if (grade >= 50) {
+  gameOver(percent) {
+    if (percent >= 50) {
       this.setState({
         quizzLevel: this.state.quizzLevel + 1,
-        percent: grade,
-        quizzEnd: true,
+        percent: percent,
       });
     } else {
       this.setState({
-        percent: grade,
-        quizzEnd: true,
+        percent: percent,
       });
     }
   }
@@ -86,7 +88,10 @@ class Quizz extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.storedQuestions !== prevState.storedQuestions) {
+    if (
+      this.state.storedQuestions !== prevState.storedQuestions &&
+      this.state.storedQuestions.length
+    ) {
       this.setState({
         question:
           this.state.storedQuestions[this.state.questionNumber].question,
@@ -94,7 +99,15 @@ class Quizz extends Component {
       });
     }
 
-    if (this.state.questionNumber !== prevState.questionNumber) {
+    if (this.state.quizzEnd !== prevState.quizzEnd) {
+      const grade = this.getPercent(this.state.maxQuestions, this.state.score);
+      this.gameOver(grade);
+    }
+
+    if (
+      this.state.questionNumber !== prevState.questionNumber &&
+      this.state.storedQuestions.length
+    ) {
       this.setState({
         question:
           this.state.storedQuestions[this.state.questionNumber].question,
@@ -104,7 +117,7 @@ class Quizz extends Component {
       });
     }
 
-    if (this.props.userData.pseudo) {
+    if (this.props.userData.pseudo !== prevProps.userData.pseudo) {
       this.welcomeMsg(this.props.userData.pseudo);
     }
   }
@@ -118,8 +131,9 @@ class Quizz extends Component {
 
   handleSubmit = () => {
     if (this.state.questionNumber === this.state.maxQuestions - 1) {
-      console.log("game finished");
-      this.gameOver();
+      this.setState({
+        quizzEnd: true,
+      });
     } else {
       this.setState((prev) => ({
         questionNumber: prev.questionNumber + 1,
@@ -184,6 +198,14 @@ class Quizz extends Component {
     }
   };
 
+  loadLevelQuestions = (param) => {
+    this.setState({
+      ...this.initialState,
+      quizzLevel: param,
+    });
+    this.loadQuestions(this.state.levelNames[param]);
+  };
+
   render() {
     const displayOptions = this.state.options.map((option, i) => {
       return (
@@ -208,10 +230,14 @@ class Quizz extends Component {
         maxQuestions={this.state.maxQuestions}
         quizzLevel={this.state.quizzLevel}
         percent={this.state.percent}
+        loadLevelQuestions={this.loadLevelQuestions}
       />
     ) : (
       <>
-        <Levels />
+        <Levels
+          quizzLevel={this.state.quizzLevel}
+          levelNames={this.state.levelNames}
+        />
         <ProgressBar percentage={this.state.questionNumber} />
         <h2>{this.state.question}</h2>
         {displayOptions}
