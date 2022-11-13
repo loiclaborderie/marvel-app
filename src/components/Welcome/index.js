@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FirebaseContext } from "../Firebase";
+import Loader from "../Loader";
 import Logout from "../Logout";
 import Quizz from "../Quizz";
 
@@ -42,8 +43,10 @@ function Welcome() {
 
   return userSession === null ? (
     <>
-      <div className="loader"></div>
-      <p>Loading...</p>
+      <Loader
+        message={"Authentification..."}
+        style={{ color: "#ffffff", textAlign: "center" }}
+      />
     </>
   ) : (
     <div className="quiz-bg">

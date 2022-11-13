@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { GiTrophyCup } from "react-icons/gi";
+import Loader from "../Loader";
+import Modal from "../Modal";
 
 const QuizzOver = React.forwardRef(
   (
@@ -14,10 +16,22 @@ const QuizzOver = React.forwardRef(
     ref
   ) => {
     const [asked, setAsked] = useState([]);
+    const [openModal, setOpenModal] = useState(false);
+
+    const publicKey = "e8263005bf9f1816b49a0651b6611838";
+    const hash = "24e27ded85860907bcc934f8d7846d12";
 
     useEffect(() => {
       setAsked(ref.current);
     }, [ref]);
+
+    const showModal = (id) => {
+      setOpenModal(true);
+    };
+
+    const closeModal = () => {
+      setOpenModal(false);
+    };
 
     const positiveGradeMsg = percent > 80 ? "Excellent" : "Pas mal";
     const negativeGradeMsg =
@@ -109,7 +123,12 @@ const QuizzOver = React.forwardRef(
               <td>{questions.question}</td>
               <td>{questions.answer}</td>
               <td>
-                <button className="btnInfo">Infos</button>
+                <button
+                  onClick={() => showModal(questions.heroId)}
+                  className="btnInfo"
+                >
+                  Infos
+                </button>
               </td>
             </tr>
           );
@@ -117,25 +136,21 @@ const QuizzOver = React.forwardRef(
       ) : (
         <tr>
           <td colSpan="3">
-            <div className="loader"></div>
-            <p
+            <Loader
+              message={"Pas de réponses pour toi, réessaye !"}
               style={{
                 textAlign: "center",
                 color: "red",
                 fontSize: 24,
                 fontWeight: 900,
               }}
-            >
-              Pas de réponses pour toi, réessaye !
-            </p>
+            />
           </td>
         </tr>
       );
-
     return (
       <>
         {decision}
-
         <hr />
         <p>Les réponses aux questions posées: </p>
         <div className="answerContainer">
@@ -150,6 +165,17 @@ const QuizzOver = React.forwardRef(
             <tbody>{data}</tbody>
           </table>
         </div>
+        <Modal closeModal={closeModal} openModal={openModal}>
+          <div className="modalHeader">
+            <h2>Titre</h2>
+          </div>
+          <div className="modalBody">
+            <h3>Titre 2</h3>
+          </div>
+          <div className="modalFooter">
+            <button className="modalBtn">Fermer</button>
+          </div>
+        </Modal>
       </>
     );
   }
