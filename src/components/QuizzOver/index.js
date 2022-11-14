@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { GiTrophyCup } from "react-icons/gi";
 import Loader from "../Loader";
 import Modal from "../Modal";
+import axios from "axios";
 
 const QuizzOver = React.forwardRef(
   (
@@ -17,20 +18,61 @@ const QuizzOver = React.forwardRef(
   ) => {
     const [asked, setAsked] = useState([]);
     const [openModal, setOpenModal] = useState(false);
+    const [characterInfo, setCharacterInfo] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const publicKey = "e8263005bf9f1816b49a0651b6611838";
-    const hash = "24e27ded85860907bcc934f8d7846d12";
+    const hash = "80df54df547b22fc1e70be64a96b029a";
 
     useEffect(() => {
       setAsked(ref.current);
+      if (localStorage.getItem("marvelStorageDate")) {
+        const date = localStorage.getItem("marvelStorageDate");
+        checkDataAge(date);
+      }
     }, [ref]);
+
+    const checkDataAge = (date) => {
+      let today = Date.now();
+      const timeDifference = today - date;
+      const daysDifference = timeDifference / (1000 * 3600 * 24);
+      if (daysDifference >= 15) {
+        localStorage.clear();
+        localStorage.setItem("marvelStorageDate", Date.now());
+      }
+    };
 
     const showModal = (id) => {
       setOpenModal(true);
+
+      if (localStorage.getItem(id)) {
+        setCharacterInfo(JSON.parse(localStorage.getItem(id)));
+        setLoading(false);
+        console.log("info trouvée via localStorage");
+      } else {
+        axios
+          .get(
+            `https://gateway.marvel.com/v1/public/characters/${id}?ts=1&apikey=${publicKey}&hash=${hash}`
+          )
+          .then((response) => {
+            setCharacterInfo(response.data);
+            console.log("info fetched via axios");
+            setLoading(false);
+
+            localStorage.setItem(id, JSON.stringify(response.data));
+            if (!localStorage.getItem("marvelStorageDate")) {
+              localStorage.setItem("marvelStorageDate", Date.now());
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
     };
 
     const closeModal = () => {
       setOpenModal(false);
+      setLoading(true);
     };
 
     const positiveGradeMsg = percent > 80 ? "Excellent" : "Pas mal";
@@ -45,6 +87,10 @@ const QuizzOver = React.forwardRef(
         loadLevelQuestions(quizzLevel);
       }, 3000);
     }
+
+    const firstCapital = (str) => {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    };
 
     const decision =
       score >= averageGrade ? (
@@ -148,6 +194,70 @@ const QuizzOver = React.forwardRef(
           </td>
         </tr>
       );
+
+    const resultInModal = !loading ? (
+      <>
+        <div className="modalHeader">
+          <h2> {characterInfo.data.results[0].name} </h2>
+        </div>
+        <div className="modalBody">
+          <div className="comicImage">
+            <img
+              src={
+                characterInfo.data.results[0].thumbnail.path +
+                "." +
+                characterInfo.data.results[0].thumbnail.extension
+              }
+              alt={characterInfo.data.results[0].name}
+            />
+            {characterInfo.attributionText}
+          </div>
+          <div className="comicDetails">
+            <h3>Description</h3>
+            {characterInfo.data.results[0].description ? (
+              <p>{characterInfo.data.results[0].description}</p>
+            ) : (
+              <p>Description indisponible</p>
+            )}
+            <h3>Plus d'informations</h3>
+            {characterInfo.data.results[0].urls &&
+              characterInfo.data.results[0].urls.map((url, index) => {
+                return (
+                  <a
+                    className=""
+                    key={index}
+                    href={url.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {firstCapital(url.type)}
+                  </a>
+                );
+              })}
+          </div>
+        </div>
+        <div className="modalFooter">
+          <button onClick={closeModal} className="modalBtn">
+            Fermer
+          </button>
+        </div>
+      </>
+    ) : (
+      <>
+        <div className="modalHeader">
+          <h2> Réponse de Marvel... </h2>
+        </div>
+        <div className="modalBody">
+          <Loader />
+        </div>
+        <div className="modalFooter">
+          <button onClick={closeModal} className="modalBtn">
+            Fermer
+          </button>
+        </div>
+      </>
+    );
+
     return (
       <>
         {decision}
@@ -165,17 +275,7 @@ const QuizzOver = React.forwardRef(
             <tbody>{data}</tbody>
           </table>
         </div>
-        <Modal closeModal={closeModal} openModal={openModal}>
-          <div className="modalHeader">
-            <h2>Titre</h2>
-          </div>
-          <div className="modalBody">
-            <h3>Titre 2</h3>
-          </div>
-          <div className="modalFooter">
-            <button className="modalBtn">Fermer</button>
-          </div>
-        </Modal>
+        <Modal openModal={openModal}>{resultInModal}</Modal>
       </>
     );
   }
